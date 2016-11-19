@@ -153,13 +153,15 @@ public class Main {
 		ArrayList<FuzzyPattern> pats = traData.getPattern();
 		int Cnum = traData.getCnum();
 		int Ndim = traData.getNdim();
+
+		int maxFnum = 3;
 		double maxClassRate = 0.9;
 		double minNumPatterns = 10;
 		double cf = 0.25;
 		boolean isPrune = true;
 
-		FuzzyC45 fuzzyc45 = new FuzzyC45(cf, isPrune);
-		fuzzyc45.buildTree(pats, Cnum, Ndim, maxClassRate, minNumPatterns);
+		FuzzyC45 fuzzyc45 = new FuzzyC45(cf, isPrune, maxFnum, maxClassRate, minNumPatterns, rnd);
+		fuzzyc45.buildTree(pats, Cnum, Ndim);
 
 	}
 

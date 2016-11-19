@@ -1,6 +1,6 @@
 package c45;
 
-import java.util.ArrayList;
+import methods.MersenneTwisterFast;
 
 public class DecisionTree {
 
@@ -11,19 +11,45 @@ public class DecisionTree {
 	public int numberOfLeafs;
 
 	public boolean prune;
-
 	public double cf;
+	public double maxClassNum;
+	public double minNumPatterns;
 
-    public DecisionTree(double cf, boolean prune) {
+	MersenneTwisterFast rnd;
+
+    public DecisionTree(double cf, boolean prune, double maxClassNum, double minNumPatterns, MersenneTwisterFast rnd) {
         root = new Node(true);
-        root.children = new ArrayList<Node>();
 
         this.cf = cf;
         this.prune = prune;
+        this.maxClassNum = maxClassNum;
+        this.minNumPatterns = minNumPatterns;
+        this.rnd = new MersenneTwisterFast(rnd.nextInt());
 
-        numberOfNodes = 0;
+        numberOfNodes = 1;
         numberOfLeafs = 0;
+    }
 
+    public void addNode(){
+    	numberOfNodes++;
+    }
+
+    public void addLeaf(){
+    	numberOfLeafs++;
+    }
+
+    public void decNode(){
+    	numberOfNodes--;
+    }
+
+    public void decLeaf(){
+    	numberOfLeafs--;
+    }
+
+    public void updateDepth(int nowDepth){
+    	if(nowDepth > depth){
+    		this.depth = nowDepth;
+    	}
     }
 
     public int getDepth(){

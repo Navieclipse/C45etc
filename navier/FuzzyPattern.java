@@ -20,6 +20,12 @@ public class FuzzyPattern {
 		this.confidence = pat.getConfidence();
 	}
 
+	public FuzzyPattern(FuzzyPattern pat, double confidence){
+		this.x = pat.getXs();
+		this.conClass = pat.getConClass();
+		this.confidence = confidence;
+	}
+
 	/******************************************************************************/
 
 	double[] x;
