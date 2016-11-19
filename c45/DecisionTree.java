@@ -12,17 +12,17 @@ public class DecisionTree {
 
 	public boolean prune;
 	public double cf;
-	public double maxClassNum;
+	public double maxClassRate;
 	public double minNumPatterns;
 
 	MersenneTwisterFast rnd;
 
-    public DecisionTree(double cf, boolean prune, double maxClassNum, double minNumPatterns, MersenneTwisterFast rnd) {
+    public DecisionTree(double cf, boolean prune, double maxClassRate, double minNumPatterns, MersenneTwisterFast rnd) {
         root = new Node(true);
 
         this.cf = cf;
         this.prune = prune;
-        this.maxClassNum = maxClassNum;
+        this.maxClassRate = maxClassRate;
         this.minNumPatterns = minNumPatterns;
         this.rnd = new MersenneTwisterFast(rnd.nextInt());
 

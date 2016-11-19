@@ -2,6 +2,30 @@ package c45;
 
 public class Utils {
 
+	public static int getMaxIndex(double[] array){		//同率のときは若いインデックスの勝ち．
+		int maxIndex = 0;
+		double max = 0.0;
+		for (int i = 0; i < array.length; i++) {
+			if(array[i] > max){
+				max = array[i];
+				maxIndex = i;
+			}
+		}
+		return maxIndex;
+	}
+
+	public static int getMaxIndex(int[] array){
+		int maxIndex = 0;
+		int max = 0;
+		for (int i = 0; i < array.length; i++) {
+			if(array[i] > max){
+				max = array[i];
+				maxIndex = i;
+			}
+		}
+		return maxIndex;
+	}
+
 	public static double calcInfoVol(double part, double all){
 		double info = 0.0;
 		if(part != 0.0) info = -1 * (part/all) * ( Math.log(part/all) / Math.log(2) ) ;

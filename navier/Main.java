@@ -155,7 +155,7 @@ public class Main {
 		int Ndim = traData.getNdim();
 
 		int maxFnum = 3;
-		double maxClassRate = 0.9;
+		double maxClassRate = 0.75;
 		double minNumPatterns = 10;
 		double cf = 0.25;
 		boolean isPrune = true;

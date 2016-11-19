@@ -7,6 +7,7 @@ import navier.FuzzyPattern;
 public class Node{
 
 	public int attribute;
+	public FuzzyFunc ff;
 
 	public int nowDepth;
 	public Node parent;
@@ -20,9 +21,9 @@ public class Node{
     //コピぃコンストラクタ
     Node(Node node){
     	this.attribute = node.attribute;
+    	this.ff = node.ff;
     	this.nowDepth = node.getNowDepth();
-    	this.parent = new Node(node.getParent());
-    	this.children = node.getChildren();
+    	this.parent = new Node(node.getParent());;
     	for(int i=0; i<node.getChildren().size(); i++){
     		this.children.add( new Node(node.getChild(i)) ) ;
     	}
@@ -46,6 +47,14 @@ public class Node{
 
     public int getNumOfBranch(){
     	return children.size();
+    }
+
+    public FuzzyFunc getFF(){
+    	return ff;
+    }
+
+    public void setFF(int Fnum){
+    	ff = new FuzzyFunc(Fnum);
     }
 
     public void setAttribute(int attribute){

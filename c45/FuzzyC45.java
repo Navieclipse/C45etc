@@ -9,55 +9,55 @@ public class FuzzyC45 extends DecisionTree{
 
 	int maxFnum;
 
-	public FuzzyC45(double cf, boolean isPrune, int maxFnum, double maxClassNum, double minNumPatterns, MersenneTwisterFast rnd){
-		super(cf, isPrune, maxClassNum, minNumPatterns, rnd);
+	public FuzzyC45(double cf, boolean isPrune, int maxFnum, double maxClassRate, double minNumPatterns, MersenneTwisterFast rnd){
+		super(cf, isPrune, maxClassRate, minNumPatterns, rnd);
 		this.maxFnum = maxFnum;
 	}
 
 	//パラメータ
 	public void buildTree(ArrayList<FuzzyPattern> pat, int Cnum, int Ndim){
 		boolean[] selectedAtt = new boolean[Ndim];
+		//ここから再帰
 		makeNodes(root, pat, Cnum, Ndim, selectedAtt);
+
+		System.out.println();
+		System.out.println(pat.size() +" "+Cnum +" "+depth +" "+ numberOfLeafs +" "+ numberOfNodes);
+		StringBuffer text = new StringBuffer();
+		graphTree(root, text, Cnum);
+		System.out.println(text);
 	}
 
 	void makeNodes(Node node, ArrayList<FuzzyPattern> pat, int Cnum, int Ndim, boolean[] selectedAtt){
 
-		if(pat.size() < minNumPatterns && isSelectedFullAtt(selectedAtt, Ndim)){	//葉にする
+		//葉にする
+		if(pat.size() < minNumPatterns || isSelectedFullAtt(selectedAtt, Ndim) || isOverMaxClass(pat, Cnum)){
 			node.setIsLeaf();
 			node.calcEachClassConfidence(pat, Cnum);	//結論部を割合で計算．
 			updateDepth(node.getNowDepth());			//木の深さ更新
+			addLeaf();									//葉の数をカウント
 			return;
 		}
+
 		//分割数決定
 		int Fnum = decideFnum(maxFnum);
-		FuzzyFunc ff = new FuzzyFunc(Fnum);
+		node.setFF(Fnum);
 
 		//全体の分割情報量を計算
 		double IofD = Utils.calcAveInfo( patternCount(pat, Cnum) );
 		//各属性の分割情報量を計算
-		double[] allAttVal = calcAttValue(pat, Ndim, Cnum, Fnum, IofD, ff, selectedAtt);
+		double[] allAttVal = calcAttValue(pat, Ndim, Cnum, Fnum, IofD, node.getFF(), selectedAtt);
 		//このノードの属性選択
-		double maxVal = 0.0;
-		int maxAtt = 0;
-		for(int i=0; i<allAttVal.length; i++){
-			if(allAttVal[i] > maxVal){
-				maxAtt = i;
-				maxVal = allAttVal[i];
-			}
-		}
+		int maxAtt = Utils.getMaxIndex(allAttVal);
 		selectedAtt[maxAtt] = true;
 		node.setAttribute(maxAtt);
 
-		//このノードのの子個体生成
-		if( && )
-		updateDepth(root.getNowDepth()+1);
+		//このノードの子個体生成
 		for(int f=0; f<Fnum; f++){
 			//子ノード用パターン集合(信頼度計算済み)生成からの子ノード生成
-			ArrayList<FuzzyPattern> childPat = makeChildPat(f, pat, maxAtt, ff);
-			root.addChild(  new Node( (root.getNowDepth()+1), root)  );
-			addNode();	//この木のノード数
-			//ここから再帰
-			makeNodes(root.getChild(f), childPat, Cnum, Ndim, selectedAtt);
+			ArrayList<FuzzyPattern> childPat = makeChildPat(f, pat, maxAtt, node.getFF());
+			node.addChild(  new Node( (node.getNowDepth()+1), node )  );
+			addNode();	//この木のノード数をカウント
+			makeNodes(node.getChild(f), childPat, Cnum, Ndim, selectedAtt);
 		}
 	}
 
@@ -80,6 +80,17 @@ public class FuzzyC45 extends DecisionTree{
 			if(selectedAtt[i]) numOfSelected++;
 		}
 		return numOfSelected == Ndim;
+	}
+
+	boolean isOverMaxClass(ArrayList<FuzzyPattern> pat, int Cnum){
+		int[] numOfEachClass = new int [Cnum];
+		for (int i = 0; i < pat.size(); i++) {
+			numOfEachClass[pat.get(i).getConClass()]++;
+		}
+		int maxClass = Utils.getMaxIndex(numOfEachClass);
+		double rate = numOfEachClass[maxClass] / pat.size();
+
+		return rate > maxClassRate;
 	}
 
 	int decideFnum(int maxFnum){
@@ -116,6 +127,24 @@ public class FuzzyC45 extends DecisionTree{
 			eachClassCount[pat.get(i).getConClass()] += pat.get(i).getConfidence();
 		}
 		return eachClassCount;
+	}
+
+	public void graphTree(Node node, StringBuffer text , int Cnum){
+		String indent ="";
+		for(int i=0; i<node.nowDepth-1; i++){
+			indent += "\t";
+		}
+		if(node.getIsLeaf()){
+			for (int i = 0; i < Cnum; i++) {
+				text.append(indent + "\t C: " +i+ node.getClassConfidence(i) +"\n");
+			}
+		}else{
+			text.append(indent + "Att: " + node.getAttribute() +"\n");
+			for(int i=0; i<node.getNumOfBranch(); i++){
+				text.append(indent + "Branch"+node.nowDepth+": " + i +"\n");
+				graphTree(node.getChild(i), text, Cnum);
+			}
+		}
 	}
 
 }
