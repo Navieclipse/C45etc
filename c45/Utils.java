@@ -26,9 +26,14 @@ public class Utils {
 		return maxIndex;
 	}
 
+	public static double log2(double value){
+		return  ( Math.log(value) / Math.log(2) );
+	}
+
+
 	public static double calcInfoVol(double part, double all){
 		double info = 0.0;
-		if(part != 0.0) info = -1 * (part/all) * ( Math.log(part/all) / Math.log(2) ) ;
+		if(part != 0.0) info = -1 * (part/all) * log2(part/all);
 		return info;
 	}
 
@@ -85,6 +90,22 @@ public class Utils {
 			GR = G / S;
 		}
 		return GR;
+	}
+
+
+	public static double calcModifGainRate(double[] eachInfo, double[] eachVal, double IofD,int numOfAtt, int p, int q){
+		//p = 1, q=-1とするとGRと同じになる．
+		//pが大きいほど属性値の少ない属性が選択される．
+		//qが大きいほどデータが均等に分割されている属性が選択されやすく成る．
+		double G = calcGain(eachInfo, eachVal, IofD);
+		double S = calcAveInfo(eachVal);
+
+		double MG = 0.0;
+		if(numOfAtt != 0){
+			MG =   ( G / Math.pow(numOfAtt, p) ) * Math.pow( (S / log2(numOfAtt)), q)   ;
+		}
+
+		return MG;
 	}
 
 }

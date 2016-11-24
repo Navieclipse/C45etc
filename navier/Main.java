@@ -151,8 +151,16 @@ public class Main {
 
 
 		ArrayList<FuzzyPattern> pats = traData.getPattern();
+		ArrayList<FuzzyPattern> patsTst = tstData.getPattern();
 		int Cnum = traData.getCnum();
 		int Ndim = traData.getNdim();
+
+		int size = pats.size();
+		ArrayList<FuzzyPattern> pats2 = new ArrayList<FuzzyPattern>();
+		for(int p=0; p<size; p++){
+			pats2.add(  new FuzzyPattern( pats.get(p) )  );
+		}
+		System.out.println(pats2.size());
 
 		int maxFnum = 3;
 		double maxClassRate = 0.75;
@@ -161,8 +169,29 @@ public class Main {
 		boolean isPrune = true;
 
 		FuzzyC45 fuzzyc45 = new FuzzyC45(cf, isPrune, maxFnum, maxClassRate, minNumPatterns, rnd);
-		fuzzyc45.buildTree(pats, Cnum, Ndim);
+		try {
+			fuzzyc45.buildTree(pats2, Cnum, Ndim);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
+		//木の可視化
+		StringBuffer text = new StringBuffer();
+		fuzzyc45.drowTree(text, Cnum);
+		//System.out.println(text);
+		System.out.println();
+
+		//木の学習用誤識別率
+		System.out.println("DataSize: " + pats.size() + " "+"Cnum: " +Cnum);
+		System.out.println( "depth: "+ fuzzyc45.getDepth() +" "+ "numberOfLeafs:"+fuzzyc45.getNumberOfLeafs()+" "+ "numberOfNodes: "+ fuzzyc45.getNumberOfNodes() );
+		int numOfcollect = fuzzyc45.calcNumOfCollect(pats, Cnum);
+		double rate = (  (double)numOfcollect / pats.size()  )* 100.0;
+		System.out.println(rate+" "+ numOfcollect);
+
+		//木の評価用誤識別率
+		int numOfcollectTst = fuzzyc45.calcNumOfCollect(patsTst, Cnum);
+		double rateTst = (  (double)numOfcollectTst / patsTst.size()  ) * 100.0;
+		System.out.println(rateTst+" "+ numOfcollectTst);
 	}
 
 	static public void pall(int i,Dataset traData, Dataset tstData, MersenneTwisterFast rnd, int objectives, int gen, ForkJoinPool Dpop,int func,int Npop, Resulton res, TimeWatch time ,int CV, int Rep, int Pon, int os){

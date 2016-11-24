@@ -6,6 +6,7 @@ import navier.FuzzyPattern;
 
 public class Node{
 
+	public int numOfFuzzy;
 	public int attribute;
 	public FuzzyFunc ff;
 
@@ -36,10 +37,27 @@ public class Node{
     	this.parent = null;
     }
 
-    Node(int depth, Node parent){
+    Node(int depth, int numOfFuzzy, Node parent){
 		this.nowDepth = depth;
+		this.numOfFuzzy = numOfFuzzy;
 		this.parent = parent;
 	}
+
+    public int getNumOfFuzzy(){
+    	return numOfFuzzy;
+    }
+
+    public double calcNodeValue(int num, FuzzyPattern pat){
+    	return ff.calcMembership( num, pat.getX(attribute) );
+    }
+
+    public int getCnum(){
+    	return eachClassConfidence.length;
+    }
+
+    public int getFnum(){
+    	return ff.Fnum;
+    }
 
     public int getAttribute(){
     	return attribute;

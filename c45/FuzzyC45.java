@@ -1,6 +1,7 @@
 package c45;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import methods.MersenneTwisterFast;
 import navier.FuzzyPattern;
@@ -15,20 +16,13 @@ public class FuzzyC45 extends DecisionTree{
 	}
 
 	//パラメータ
-	public void buildTree(ArrayList<FuzzyPattern> pat, int Cnum, int Ndim){
+	public void buildTree(ArrayList<FuzzyPattern> pat, int Cnum, int Ndim) throws Exception {
 		boolean[] selectedAtt = new boolean[Ndim];
 		//ここから再帰
 		makeNodes(root, pat, Cnum, Ndim, selectedAtt);
-
-		System.out.println();
-		System.out.println(pat.size() +" "+Cnum +" "+depth +" "+ numberOfLeafs +" "+ numberOfNodes);
-		StringBuffer text = new StringBuffer();
-		graphTree(root, text, Cnum);
-		System.out.println(text);
 	}
 
-	void makeNodes(Node node, ArrayList<FuzzyPattern> pat, int Cnum, int Ndim, boolean[] selectedAtt){
-
+	void makeNodes(Node node, ArrayList<FuzzyPattern> pat, int Cnum, int Ndim, boolean[] selectedAtt) throws Exception {
 		//葉にする
 		if(pat.size() < minNumPatterns || isSelectedFullAtt(selectedAtt, Ndim) || isOverMaxClass(pat, Cnum)){
 			node.setIsLeaf();
@@ -55,9 +49,10 @@ public class FuzzyC45 extends DecisionTree{
 		for(int f=0; f<Fnum; f++){
 			//子ノード用パターン集合(信頼度計算済み)生成からの子ノード生成
 			ArrayList<FuzzyPattern> childPat = makeChildPat(f, pat, maxAtt, node.getFF());
-			node.addChild(  new Node( (node.getNowDepth()+1), node )  );
+			node.addChild(  new Node( (node.getNowDepth()+1), f, node )  );
 			addNode();	//この木のノード数をカウント
-			makeNodes(node.getChild(f), childPat, Cnum, Ndim, selectedAtt);
+			boolean[] childSeleAtt = Arrays.copyOf(selectedAtt, selectedAtt.length);
+			makeNodes(node.getChild(f), childPat, Cnum, Ndim, childSeleAtt);
 		}
 	}
 
@@ -109,13 +104,14 @@ public class FuzzyC45 extends DecisionTree{
 			for(int f=0; f<Fnum; f++){
 				double[] eachClassVal = new double[Cnum];
 				for (int p=0; p<pat.size(); p++){
-					eachClassVal[pat.get(p).getConClass()] += ff.calcMembership( f, pat.get(p).getX(n) ) * pat.get(p).getConClass();
+					eachClassVal[pat.get(p).getConClass()] += ff.calcMembership( f, pat.get(p).getX(n) ) * pat.get(p).getConfidence();
 				}
 				eachFuzzySetInfo[f] = Utils.calcAveInfo(eachClassVal);
 				eachFuzzySetVal[f] = Utils.calcAll(eachClassVal);
 			}
 
 			eachAttGainRate[n] = Utils.calcGainRate(eachFuzzySetInfo, eachFuzzySetVal, IofD);
+			//eachAttGainRate[n] = Utils.calcModifGainRate(eachFuzzySetInfo, eachFuzzySetVal, IofD, ff.Fnum, 1, -1);
 		}
 
 		return eachAttGainRate;
@@ -123,29 +119,74 @@ public class FuzzyC45 extends DecisionTree{
 
 	double[] patternCount(ArrayList<FuzzyPattern> pat, int Cnum){
 		double[] eachClassCount = new double[Cnum];
-		for (int i=0; i < pat.size(); i++) {
-			eachClassCount[pat.get(i).getConClass()] += pat.get(i).getConfidence();
+		for (int p=0; p < pat.size(); p++) {
+			eachClassCount[pat.get(p).getConClass()] += pat.get(p).getConfidence();
 		}
 		return eachClassCount;
 	}
 
-	public void graphTree(Node node, StringBuffer text , int Cnum){
+	void graphTree(Node node, StringBuffer text , int Cnum){
 		String indent ="";
 		for(int i=0; i<node.nowDepth-1; i++){
 			indent += "\t";
 		}
 		if(node.getIsLeaf()){
 			for (int i = 0; i < Cnum; i++) {
-				text.append(indent + "\t C: " +i+ node.getClassConfidence(i) +"\n");
+				text.append(indent + "\t C"+i+": " + node.getClassConfidence(i) +"\n");
 			}
 		}else{
-			text.append(indent + "Att: " + node.getAttribute() +"\n");
+			text.append(indent + "Att" + node.getAttribute() +"\n");
 			for(int i=0; i<node.getNumOfBranch(); i++){
-				text.append(indent + "Branch"+node.nowDepth+": " + i +"\n");
+				text.append(indent + "Branch"+i+"\n");
 				graphTree(node.getChild(i), text, Cnum);
 			}
 		}
 	}
+
+	public void drowTree(StringBuffer text, int Cnum){
+		graphTree(root, text, Cnum);
+	}
+
+	public void downTree(FuzzyPattern pat, Node node, double followValue, double[] eachClassValue){
+		if(node.getIsLeaf()){
+			for(int i=0; i<node.getCnum(); i++){
+				eachClassValue[i] += followValue * node.getClassConfidence(i);
+			}
+		}else{
+			for(int f=0; f<node.getFnum(); f++){
+				double newFollowValue = followValue * node.calcNodeValue(f, pat);
+				if(newFollowValue == 0.0) continue;
+				downTree(pat, node.getChild(f), newFollowValue, eachClassValue);
+			}
+		}
+
+	}
+
+	public int calcNumOfCollect(ArrayList<FuzzyPattern> pat, int Cnum){
+
+		int numOfCollect = 0;
+
+		for (int p = 0; p < pat.size(); p++) {
+
+			double[] classValue = new double[Cnum];
+			downTree(pat.get(p), root, 1.0, classValue);
+
+			int resultClass = -1;
+			double max = 0.0;
+			for(int c=0; c<Cnum; c++){
+				if(classValue[c] > max){
+					max = classValue[c];
+					resultClass = c;
+				}
+			}
+			if(resultClass == pat.get(p).getConClass()){
+				numOfCollect++;
+			}
+		}
+
+		return numOfCollect;
+	}
+
 
 }
 

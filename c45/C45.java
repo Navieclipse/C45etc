@@ -8,4 +8,6 @@ public class C45 extends DecisionTree{
 		super(cf, isPrune, maxClassRate, minNumPatterns, rnd);
 	}
 
+
+
 }
