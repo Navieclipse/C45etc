@@ -16,10 +16,14 @@ public class FuzzyC45 extends DecisionTree{
 	}
 
 	//パラメータ
-	public void buildTree(ArrayList<FuzzyPattern> pat, int Cnum, int Ndim) throws Exception {
+	public void buildTree(ArrayList<FuzzyPattern> pat, int Cnum, int Ndim){
 		boolean[] selectedAtt = new boolean[Ndim];
 		//ここから再帰
-		makeNodes(root, pat, Cnum, Ndim, selectedAtt);
+		try {
+			makeNodes(root, pat, Cnum, Ndim, selectedAtt);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	void makeNodes(Node node, ArrayList<FuzzyPattern> pat, int Cnum, int Ndim, boolean[] selectedAtt) throws Exception {
@@ -186,7 +190,6 @@ public class FuzzyC45 extends DecisionTree{
 
 		return numOfCollect;
 	}
-
 
 }
 

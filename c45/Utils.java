@@ -4,7 +4,7 @@ public class Utils {
 
 	public static int getMaxIndex(double[] array){		//同率のときは若いインデックスの勝ち．
 		int maxIndex = 0;
-		double max = 0.0;
+		double max = Double.MIN_VALUE;
 		for (int i = 0; i < array.length; i++) {
 			if(array[i] > max){
 				max = array[i];
@@ -14,9 +14,21 @@ public class Utils {
 		return maxIndex;
 	}
 
+	public static int getMinIndex(double[] array){
+		int minIndex = 0;
+		double min = Double.MAX_VALUE;
+		for (int i = 0; i < array.length; i++) {
+			if(array[i] < min){
+				min = array[i];
+				minIndex = i;
+			}
+		}
+		return minIndex;
+	}
+
 	public static int getMaxIndex(int[] array){
 		int maxIndex = 0;
-		int max = 0;
+		int max = Integer.MIN_VALUE;
 		for (int i = 0; i < array.length; i++) {
 			if(array[i] > max){
 				max = array[i];
@@ -25,6 +37,7 @@ public class Utils {
 		}
 		return maxIndex;
 	}
+
 
 	public static double log2(double value){
 		return  ( Math.log(value) / Math.log(2) );
@@ -92,6 +105,14 @@ public class Utils {
 		return GR;
 	}
 
+	public static double calcGainRate(double Gain, double Split){
+		double GR = 0.0;
+		if(Split != 0.0){
+			GR = Gain / Split;
+		}
+		return GR;
+	}
+
 
 	public static double calcModifGainRate(double[] eachInfo, double[] eachVal, double IofD,int numOfAtt, int p, int q){
 		//p = 1, q=-1とするとGRと同じになる．
@@ -107,5 +128,19 @@ public class Utils {
 
 		return MG;
 	}
+
+	public static double calcModifGainRate(double Gain, double Split, int numOfAtt, int p, int q){
+		//p = 1, q=-1とするとGRと同じになる．
+		//pが大きいほど属性値の少ない属性が選択される．
+		//qが大きいほどデータが均等に分割されている属性が選択されやすく成る．
+
+		double MG = 0.0;
+		if(numOfAtt != 0){
+			MG =   ( Gain / Math.pow(numOfAtt, p) ) * Math.pow( (Split / log2(numOfAtt)), q)   ;
+		}
+
+		return MG;
+	}
+
 
 }

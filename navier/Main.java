@@ -6,7 +6,7 @@ import java.util.concurrent.ForkJoinPool;
 
 import javax.management.JMException;
 
-import c45.FuzzyC45;
+import c45.C45;
 import methods.DataLoader;
 import methods.Fmethod;
 import methods.Gmethod;
@@ -163,17 +163,33 @@ public class Main {
 		System.out.println(pats2.size());
 
 		int maxFnum = 3;
-		double maxClassRate = 0.75;
-		double minNumPatterns = 10;
+		double maxClassRate = 0.70;
+		double minNumPatterns = 2;
 		double cf = 0.25;
-		boolean isPrune = true;
+		boolean isPrune = false;
 
-		FuzzyC45 fuzzyc45 = new FuzzyC45(cf, isPrune, maxFnum, maxClassRate, minNumPatterns, rnd);
-		try {
-			fuzzyc45.buildTree(pats2, Cnum, Ndim);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		C45 c45 = new C45(cf, isPrune, maxClassRate, minNumPatterns, rnd);
+		c45.buildTree(pats2, Cnum, Ndim);
+
+		StringBuffer text = new StringBuffer();
+		c45.drowTreeWeka(text, Cnum);
+		System.out.println(text);
+		System.out.println();
+
+		System.out.println("DataSize: " + pats.size() + " "+"Cnum: " +Cnum);
+		System.out.println( "depth: "+ c45.getDepth() +" "+ "numberOfLeafs:"+c45.getNumberOfLeafs()+" "+ "numberOfNodes: "+ c45.getNumberOfNodes() );
+		int numOfcollect = c45.calcNumOfCollect(pats, Cnum);
+		double rate = (  (double)numOfcollect / pats.size()  )* 100.0;
+		System.out.println(rate+" "+ numOfcollect);
+		//木の評価用誤識別率
+		int numOfcollectTst = c45.calcNumOfCollect(patsTst, Cnum);
+		double rateTst = (  (double)numOfcollectTst / patsTst.size()  ) * 100.0;
+		System.out.println(rateTst+" "+ numOfcollectTst);
+
+
+		/*FuzzyC45 fuzzyc45 = new FuzzyC45(cf, isPrune, maxFnum, maxClassRate, minNumPatterns, rnd);
+		fuzzyc45.buildTree(pats2, Cnum, Ndim);
+
 
 		//木の可視化
 		StringBuffer text = new StringBuffer();
@@ -191,7 +207,7 @@ public class Main {
 		//木の評価用誤識別率
 		int numOfcollectTst = fuzzyc45.calcNumOfCollect(patsTst, Cnum);
 		double rateTst = (  (double)numOfcollectTst / patsTst.size()  ) * 100.0;
-		System.out.println(rateTst+" "+ numOfcollectTst);
+		System.out.println(rateTst+" "+ numOfcollectTst);*/
 	}
 
 	static public void pall(int i,Dataset traData, Dataset tstData, MersenneTwisterFast rnd, int objectives, int gen, ForkJoinPool Dpop,int func,int Npop, Resulton res, TimeWatch time ,int CV, int Rep, int Pon, int os){
