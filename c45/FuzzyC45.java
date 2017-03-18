@@ -3,16 +3,18 @@ package c45;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import genetics.FuzzyPattern;
 import methods.MersenneTwisterFast;
-import navier.FuzzyPattern;
 
 public class FuzzyC45 extends DecisionTree{
 
 	int maxFnum;
+	double cutValue;
 
-	public FuzzyC45(double cf, boolean isPrune, int maxFnum, double maxClassRate, double minNumPatterns, MersenneTwisterFast rnd){
+	public FuzzyC45(double cf, boolean isPrune, int maxFnum, double cutValue, double maxClassRate, double minNumPatterns, MersenneTwisterFast rnd){
 		super(cf, isPrune, maxClassRate, minNumPatterns, rnd);
 		this.maxFnum = maxFnum;
+		this.cutValue = cutValue;
 	}
 
 	//パラメータ
@@ -27,6 +29,7 @@ public class FuzzyC45 extends DecisionTree{
 	}
 
 	void makeNodes(Node node, ArrayList<FuzzyPattern> pat, int Cnum, int Ndim, boolean[] selectedAtt) throws Exception {
+
 		//葉にする
 		if(pat.size() < minNumPatterns || isSelectedFullAtt(selectedAtt, Ndim) || isOverMaxClass(pat, Cnum)){
 			node.setIsLeaf();
@@ -64,8 +67,8 @@ public class FuzzyC45 extends DecisionTree{
 
 		ArrayList<FuzzyPattern> childpat = new ArrayList<FuzzyPattern>();
 		for(int p=0; p<pat.size(); p++){
-			double membershipVal = ff.calcMembership( numOfFnum, pat.get(p).getX(maxAtt) );
-			if(membershipVal > 0.0){
+			double membershipVal = ff.calcMembership( numOfFnum, pat.get(p).getX(maxAtt) ) *  pat.get(p).getConfidence() ;
+			if(membershipVal > cutValue){
 				childpat.add(  new FuzzyPattern( pat.get(p), membershipVal )  );
 			}
 		}
@@ -82,12 +85,15 @@ public class FuzzyC45 extends DecisionTree{
 	}
 
 	boolean isOverMaxClass(ArrayList<FuzzyPattern> pat, int Cnum){
-		int[] numOfEachClass = new int [Cnum];
+		double allValue = 0.0;
+		double [] numOfEachClass = new double [Cnum];
+
 		for (int i = 0; i < pat.size(); i++) {
-			numOfEachClass[pat.get(i).getConClass()]++;
+			numOfEachClass[pat.get(i).getConClass()] += pat.get(i).getConfidence();
+			allValue += pat.get(i).getConfidence();
 		}
 		int maxClass = Utils.getMaxIndex(numOfEachClass);
-		double rate = numOfEachClass[maxClass] / pat.size();
+		double rate = numOfEachClass[maxClass] / allValue;
 
 		return rate > maxClassRate;
 	}
@@ -147,6 +153,37 @@ public class FuzzyC45 extends DecisionTree{
 		}
 	}
 
+	 public void drowTreeWeka(StringBuffer text, int Cnum){
+			graphTreeWeka(root, text, Cnum);
+		}
+
+	void graphTreeWeka(Node node, StringBuffer text , int Cnum){
+		String indent ="";
+		for(int i=0; i<node.nowDepth-1; i++){
+			indent += "|   ";
+		}
+		if(node.getIsLeaf()){
+			text.append(": " );
+			double[] eachConfidence = new double [Cnum];
+			for(int c =0; c<Cnum; c++){
+				eachConfidence[c] += node.getClassConfidence(c);
+				text.append(eachConfidence[c] + ", " );
+			}
+			text.append("\n");
+		}
+		else{
+
+			for(int i=0; i<node.getNumOfBranch(); i++){
+				text.append(indent + node.getAttribute() + " ");
+				text.append("A"+ (i+3) );
+
+				if(!node.children.get(i).isLeaf) text.append("\n");
+
+				graphTreeWeka(node.getChild(i), text, Cnum);
+			}
+		}
+	}
+
 	public void drowTree(StringBuffer text, int Cnum){
 		graphTree(root, text, Cnum);
 	}
@@ -163,7 +200,6 @@ public class FuzzyC45 extends DecisionTree{
 				downTree(pat, node.getChild(f), newFollowValue, eachClassValue);
 			}
 		}
-
 	}
 
 	public int calcNumOfCollect(ArrayList<FuzzyPattern> pat, int Cnum){

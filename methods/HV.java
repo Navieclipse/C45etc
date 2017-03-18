@@ -3,7 +3,7 @@ package methods;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-import navier.Pittsburgh;
+import genetics.Pittsburgh;
 
 public class HV {
 

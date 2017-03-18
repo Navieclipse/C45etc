@@ -99,6 +99,8 @@ public class Utils {
 		double G = calcGain(eachInfo, eachVal, IofD);
 		double S = calcAveInfo(eachVal);
 		double GR = 0.0;
+
+
 		if(S != 0.0){
 			GR = G / S;
 		}

@@ -1,8 +1,20 @@
-package navier;
+package genetics;
 
 public class Cons {
 
-    public static final int Seed = 2016;					//乱数シード
+	//普通
+    public static final int Seed = 20126;					//乱数シード
+
+    //ツリー
+    public static final double maxClassRate = 0.75;		//ツリー生成時の葉にする条件
+    public static final double minNumPatterns = 2;		//ツリー生成時の葉にする条件
+    public static final double cf = 0.25;					//ツリーのプルーニング時の条件
+    public static final boolean isPrune = false;
+    //ファジィ
+    public static final int maxFnum = 3;					//ツリーのファジィ分割数
+    public static final double cutValue = 0.25;			//カットする採用メンバシップ値
+
+    //GA
     public static final int Len  = 5;						//L
     public static final double Dont = 0.8;					//どんとケア適応確率（合わせ用）
 

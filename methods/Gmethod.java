@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.RandomAccess;
 
-import navier.Cons;
-import navier.Pittsburgh;
+import genetics.Cons;
+import genetics.Pittsburgh;
 
 public class Gmethod {
 
@@ -389,7 +389,7 @@ public class Gmethod {
 			File newdir = new File(path);
 			newdir.mkdir();
 
-			path = dir + "/vecset";
+			path = dir + "/treeset";
 			File newdir2 = new File(path);
 			newdir2.mkdir();
 
@@ -407,7 +407,7 @@ public class Gmethod {
 			File newdir = new File(path);
 			newdir.mkdir();
 
-			path = dir + "\\vecset";
+			path = dir + "\\treeset";
 			File newdir2 = new File(path);
 			newdir2.mkdir();
 

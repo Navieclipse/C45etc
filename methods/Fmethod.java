@@ -1,8 +1,8 @@
 package methods;
 
-import navier.Cons;
-import navier.Dataset;
-import navier.FuzzyPattern;
+import genetics.Cons;
+import genetics.Dataset;
+import genetics.FuzzyPattern;
 
 public class Fmethod {
 

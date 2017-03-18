@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import genetics.FuzzyPattern;
 import methods.MersenneTwisterFast;
-import navier.FuzzyPattern;
 
 public class C45 extends DecisionTree{
 
@@ -66,7 +66,9 @@ public class C45 extends DecisionTree{
 		}
 		int maxClass = Utils.getMaxIndex(numOfEachClass);
 
-		return (pat.size() - numOfEachClass[maxClass]) < 2;
+		double rate = numOfEachClass[maxClass] / (double)pat.size();
+
+		return rate > maxClassRate;
 	}
 
 	double[] calcDivideExpect(int Cnum, ArrayList<FuzzyPattern> pat,  ArrayList<Integer> dividePoints){
@@ -216,9 +218,9 @@ public class C45 extends DecisionTree{
 		}
 	}
 
-	public void drowTreeWeka(StringBuffer text, int Cnum){
-		graphTreeWeka(root, text, Cnum);
-	}
+	 public void drowTreeWeka(StringBuffer text, int Cnum){
+			graphTreeWeka(root, text, Cnum);
+		}
 
 	void graphTreeWeka(Node node, StringBuffer text , int Cnum){
 		String indent ="";
@@ -232,8 +234,8 @@ public class C45 extends DecisionTree{
 			for(int c =0; c<Cnum; c++){
 				numOfAllC += node.getClassConfidence(c);
 			}
-			if(numOfAllC == numOfMainC) text.append(": "+ conClass + "(" +numOfMainC+ ")" + "\n");
-			else  text.append(": "+ conClass + " (" +numOfAllC+ "/" +(numOfAllC-numOfMainC)+ ")" + "\n");
+			if(numOfAllC == numOfMainC) text.append(": "+ conClass + " (" + numOfMainC + ")" + "\n");
+			else  text.append(": "+ conClass + " (" + numOfAllC + "/" + ( numOfAllC - numOfMainC ) + ")" + "\n");
 
 		}else{
 
@@ -250,8 +252,6 @@ public class C45 extends DecisionTree{
 			}
 		}
 	}
-
-
 
 
 	public void downTree(FuzzyPattern pat, Node node, double[] eachClassValue){

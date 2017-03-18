@@ -2,7 +2,7 @@ package c45;
 
 import java.util.ArrayList;
 
-import navier.FuzzyPattern;
+import genetics.FuzzyPattern;
 
 public class Node{
 
@@ -130,7 +130,7 @@ public class Node{
     public double getClassConfidence(int classNum){
     	return eachClassConfidence[classNum];
     }
-    
+
     public double[] getClassConfidence(){
     	return eachClassConfidence;
     }

@@ -1,4 +1,4 @@
-package navier;
+package genetics;
 
 import java.util.Arrays;
 

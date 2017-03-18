@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import navier.Cons;
-import navier.Pittsburgh;
-import navier.RuleSet;
+import genetics.Cons;
+import genetics.Pittsburgh;
+import genetics.RuleSet;
 
 public class Resulton {
 
@@ -98,6 +98,75 @@ public class Resulton {
 	}
 
 
+	/******************************************************************************/
+	public void setRare(double train,double tstn,double rules,double length){
+		double tra = train;
+		double tst = tstn;
+		double num = rules;
+		double len = length;
+		this.tra = tra;
+		this.tst = tst;
+		this.num = num;
+		this.len = len;
+
+		String fileName;
+		if(os == Cons.Uni){
+			fileName = nameDir + "/write/Allwrite" + ".txt";
+		}else{
+			fileName = nameDir + "\\write\\Allwrite" + ".txt";
+		}
+		 try {
+	        FileWriter fw = new FileWriter(fileName, true);
+	        PrintWriter pw = new PrintWriter(new BufferedWriter(fw));
+
+	        pw.println(tra+" "+tst+" "+num+" "+len);
+
+	        pw.close();
+
+	        }
+		 catch (IOException ex) {
+	           ex.printStackTrace();
+		 }
+	}
+
+	/******************************************************************************/
+
+	public void outputTree(StringBuffer text, int cc, int rr, int pp){
+		String fileName;
+		if(os == Cons.Uni){
+			fileName = nameDir + "/treeset/besttree"  +"_"+pp+"_"+rr+"_"+cc+ ".txt";
+		}else{
+			fileName = nameDir + "\\treeset\\besttree"  +"_"+pp+"_"+rr+"_"+cc+ ".txt";
+		}
+
+		try {
+			FileWriter fw = new FileWriter(fileName, false);
+			PrintWriter pw = new PrintWriter(new BufferedWriter(fw));
+
+	        pw.print(text);
+	        pw.println();
+
+	        pw.close();
+		}
+		catch (IOException ex) {
+			ex.printStackTrace();
+	    }
+	}
+	/******************************************************************************/
+
+	//ツリー用
+	public void setSolution( double rul,double traErr,double tstErr,double leng){
+			this.Rul.add(rul);
+			this.Tra.add(traErr);
+			this.Tst.add((tstErr));
+			this.Len.add(leng);
+	}
+
+	/******************************************************************************/
+	/******************************************************************************/
+	/******************************************************************************/
+	/******************************************************************************/
+	/******************************************************************************/
 	/******************************************************************************/
 	public void setHV(int nowGen, double hv){
 		HV.get(nowGen).add(hv);

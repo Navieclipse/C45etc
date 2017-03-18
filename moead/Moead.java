@@ -3,9 +3,9 @@ package moead;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import genetics.Cons;
+import genetics.Pittsburgh;
 import methods.MersenneTwisterFast;
-import navier.Cons;
-import navier.Pittsburgh;
 
 public class Moead{
 

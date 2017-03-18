@@ -4,10 +4,10 @@ import static java.util.Comparator.*;
 
 import java.util.ArrayList;
 
+import genetics.Cons;
+import genetics.Pittsburgh;
+import genetics.RuleSet;
 import methods.MersenneTwisterFast;
-import navier.Cons;
-import navier.Pittsburgh;
-import navier.RuleSet;
 
 public class Nsga2 {
 

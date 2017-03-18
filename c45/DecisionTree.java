@@ -9,11 +9,14 @@ public class DecisionTree {
 
 	public int numberOfNodes;
 	public int numberOfLeafs;
+	public double traErrRate;
+	public double tstErrRate;
 
 	public boolean prune;
 	public double cf;
 	public double maxClassRate;
 	public double minNumPatterns;
+
 
 	MersenneTwisterFast rnd;
 
@@ -28,6 +31,22 @@ public class DecisionTree {
 
         numberOfNodes = 1;
         numberOfLeafs = 0;
+    }
+
+    public void setTraErrRate(double traErrRate){
+    	this.traErrRate = traErrRate;
+    }
+
+    public void setTstErrRate(double tstErrRate){
+    	this.tstErrRate = tstErrRate;
+    }
+
+    public double getTraErrRate(){
+    	return traErrRate;
+    }
+
+    public double getTstErrRate(){
+    	return tstErrRate;
     }
 
     public void addNode(){
@@ -75,6 +94,7 @@ public class DecisionTree {
     public double getCf(){
     	return cf;
     }
+
 
 }
 

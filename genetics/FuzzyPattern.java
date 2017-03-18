@@ -1,4 +1,4 @@
-package navier;
+package genetics;
 
 public class FuzzyPattern {
 
@@ -12,6 +12,15 @@ public class FuzzyPattern {
 			x[i] = pattern[i];
 		};
 		conClass = pattern[Ndim].intValue();
+	}
+
+	public FuzzyPattern(double[] pattern, int ans){
+		int Ndim = pattern.length;
+		x = new double [Ndim];
+		for (int i = 0; i < Ndim; i++) {
+			x[i] = pattern[i];
+		};
+		conClass = ans;
 	}
 
 	public FuzzyPattern(FuzzyPattern pat){
